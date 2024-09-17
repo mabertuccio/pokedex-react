@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
-import LinkedInLogo from "./LinkedInLogo";
-import GitHubLogo from "./GitHubLogo";
+import LinkedInLogo from "./logos/LinkedInLogo";
+import GitHubLogo from "./logos/GitHubLogo";
 
 const Link = ({ socialURL, logoSVG }) => {
   return (
