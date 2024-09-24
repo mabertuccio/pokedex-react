@@ -3,6 +3,8 @@ import PropTypes from "prop-types";
 import useFetchPokemonList from "../hooks/useFetchPokemonList";
 import useFetchPokemonDetails from "../hooks/useFetchPokemonDetails";
 import "./statics.css";
+import PreviousLogo from "./logos/PreviousLogo";
+import NextLogo from "./logos/NextLogo";
 
 const PokemonItem = ({ id, name, url, handleClick }) => {
   return (
@@ -28,7 +30,7 @@ const Loading = ({ isLoading }) => {
   return (
     <img
       className={`mb-4 w-10 block self-center m-4 animate-spin ${
-        !isLoading ? "hidden" : " "
+        !isLoading ? "hidden" : ""
       }`}
       src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png"
       alt="PokéBall Spinning"
@@ -43,7 +45,7 @@ Loading.propTypes = {
 const PokemonSprite = ({ isLoading, id }) => {
   return (
     <img
-      className={`mb-4 w-24 self-center m-4 ${isLoading ? "hidden" : " "}`}
+      className={`mb-4 w-24 self-center m-4 ${isLoading ? "hidden" : ""}`}
       src={
         !isLoading
           ? `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`
@@ -58,9 +60,7 @@ PokemonSprite.propTypes = {
   id: PropTypes.number,
 };
 
-const PokemonListPanel = ({ onPokemonSelect }) => {
-  const pokemonList = useFetchPokemonList();
-
+const PokemonListPanel = ({ pokemonList, onPokemonSelect, offset }) => {
   const handleClick = (id) => {
     onPokemonSelect(id);
   };
@@ -72,11 +72,11 @@ const PokemonListPanel = ({ onPokemonSelect }) => {
       <ul>
         {pokemonList.map((pokemon, index) => (
           <PokemonItem
-            id={index + 1}
+            id={index + offset + 1}
             key={pokemon.name}
             name={pokemon.name}
-            pokemonURL={pokemon.url}
-            handleClick={() => handleClick(index + 1)}
+            url={pokemon.url}
+            handleClick={() => handleClick(index + offset + 1)}
           />
         ))}
       </ul>
@@ -85,7 +85,9 @@ const PokemonListPanel = ({ onPokemonSelect }) => {
 };
 
 PokemonListPanel.propTypes = {
-  onPokemonSelect: PropTypes.func,
+  pokemonList: PropTypes.array.isRequired,
+  onPokemonSelect: PropTypes.func.isRequired,
+  offset: PropTypes.number,
 };
 
 const PokemonDetailsPanel = ({ pokemonID }) => {
@@ -150,10 +152,40 @@ PokemonDetailsPanel.propTypes = {
   pokemonID: PropTypes.number,
 };
 
-// const Pagination = () => {};
+const Button = ({ logoSVG, onClick }) => {
+  return (
+    <button
+      className="flex items-center justify-center px-3 h-8 ms-0 leading-tight bg-slate-300 hover:bg-slate-500 transition-colors rounded"
+      onClick={onClick}
+    >
+      {logoSVG}
+    </button>
+  );
+};
+
+Button.propTypes = {
+  logoSVG: PropTypes.element.isRequired,
+  onClick: PropTypes.func.isRequired,
+};
+
+const Pagination = ({ onNext, onPrevious }) => {
+  return (
+    <div className="items-center gap-4 flex justify-center">
+      <Button logoSVG={PreviousLogo} onClick={onPrevious} />
+      <Button logoSVG={NextLogo} onClick={onNext} />
+    </div>
+  );
+};
+
+Pagination.propTypes = {
+  onNext: PropTypes.func.isRequired,
+  onPrevious: PropTypes.func.isRequired,
+};
 
 const Panels = () => {
   const [selectedPokemonID, setSelectedPokemonID] = useState(null);
+  const { pokemonList, offset, goToNextPage, goToPrevPage } =
+    useFetchPokemonList();
 
   const handlePokemonSelect = (id) => {
     setSelectedPokemonID(id);
@@ -161,7 +193,12 @@ const Panels = () => {
 
   return (
     <div className="flex gap-2 justify-items-center justify-center">
-      <PokemonListPanel onPokemonSelect={handlePokemonSelect} />
+      <PokemonListPanel
+        pokemonList={pokemonList}
+        onPokemonSelect={handlePokemonSelect}
+        offset={offset}
+      />
+      <Pagination onNext={goToNextPage} onPrevious={goToPrevPage} />
       <PokemonDetailsPanel pokemonID={selectedPokemonID} />
     </div>
   );

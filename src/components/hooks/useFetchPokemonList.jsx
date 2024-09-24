@@ -2,8 +2,11 @@ import { useState } from "react";
 import { useEffect } from "react";
 
 const useFetchPokemonList = () => {
-  const API_URL = "https://pokeapi.co/api/v2/pokemon?limit=20&offset=0"; // Acá defino la URL de la PokéAPI
   const [pokemonList, setPokemonList] = useState([]); // Acá hago Array Destructuring
+  const [offset, setOffset] = useState(0);
+  const LIMIT = 20;
+
+  const API_URL = `https://pokeapi.co/api/v2/pokemon?limit=${LIMIT}&offset=${offset}`;
 
   useEffect(() => {
     const getPokemonList = async () => {
@@ -15,7 +18,15 @@ const useFetchPokemonList = () => {
     getPokemonList();
   }, [API_URL]);
 
-  return pokemonList;
+  const goToNextPage = () => {
+    setOffset((prevOffset) => prevOffset + 20);
+  };
+
+  const goToPrevPage = () => {
+    setOffset((prevOffset) => prevOffset - 20);
+  };
+
+  return { pokemonList, offset, goToNextPage, goToPrevPage };
 };
 
 export default useFetchPokemonList;
