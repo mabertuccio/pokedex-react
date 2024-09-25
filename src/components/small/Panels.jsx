@@ -108,9 +108,15 @@ const PokemonDetailsPanel = ({ pokemonID }) => {
         {error ? (
           <span className="text-red-500">{error}</span>
         ) : (
-          <strong className="text-slate-950">
-            {pokemonDetails ? pokemonDetails.name : "Select a Pokémon"}
-          </strong>
+          (
+            <strong className="text-slate-950">
+              {pokemonDetails ? pokemonDetails.name : "Select a Pokémon"}
+            </strong>
+          ) && (
+            <span className="text-slate-600">
+              #{String(pokemonID).padStart(4, "0")}
+            </span>
+          )
         )}
       </div>
       <hr className="m-2 border-t-2 border-gray-300" />
