@@ -26,37 +26,26 @@ PokemonItem.propTypes = {
   handleClick: PropTypes.func,
 };
 
-const Loading = ({ isLoading }) => {
+const Loading = () => {
   return (
     <img
-      className={`mb-4 w-10 block self-center m-4 animate-spin ${
-        !isLoading ? "hidden" : ""
-      }`}
+      className="mb-4 w-10 block self-center m-4 animate-spin"
       src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png"
       alt="PokéBall Spinning"
     />
   );
 };
 
-Loading.propTypes = {
-  isLoading: PropTypes.bool,
-};
-
-const PokemonSprite = ({ isLoading, id }) => {
+const PokemonSprite = ({ id }) => {
   return (
     <img
-      className={`mb-4 w-24 self-center m-4 ${isLoading ? "hidden" : ""}`}
-      src={
-        !isLoading
-          ? `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`
-          : ""
-      }
+      className="mb-4 w-24 self-center m-4"
+      src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`}
     />
   );
 };
 
 PokemonSprite.propTypes = {
-  isLoading: PropTypes.bool,
   id: PropTypes.number,
 };
 
@@ -91,7 +80,7 @@ PokemonListPanel.propTypes = {
 };
 
 const PokemonDetailsPanel = ({ pokemonID }) => {
-  const { pokemonDetails, loading, error } = useFetchPokemonDetails(pokemonID);
+  const { pokemonDetails, loading } = useFetchPokemonDetails(pokemonID);
 
   return (
     <div className="bg-white border border-gray-300 rounded-md p-3 m-4 w-72 h-96">
@@ -100,24 +89,20 @@ const PokemonDetailsPanel = ({ pokemonID }) => {
       </h2>
       <hr className="m-2 border-t-2 border-gray-300" />
       <div className="flex justify-center">
-        <Loading isLoading={loading} />
-        <PokemonSprite isLoading={loading} id={pokemonID} />
+        {typeof pokemonID != "number" && <Loading />}
+        {!loading && pokemonID != null && <PokemonSprite id={pokemonID} />}
       </div>
       <hr className="m-2 border-t-2 border-gray-300" />
       <div className="flex flex-col justify-center text-center">
-        {error ? (
-          <span className="text-red-500">{error}</span>
-        ) : (
-          (
-            <strong className="text-slate-950">
-              {pokemonDetails ? pokemonDetails.name : "Select a Pokémon"}
-            </strong>
-          ) && (
-            <span className="text-slate-600">
-              #{String(pokemonID).padStart(4, "0")}
-            </span>
-          )
-        )}
+        <strong className="text-slate-950">
+          {pokemonDetails ? pokemonDetails.name : "Select a Pokémon"}
+        </strong>
+
+        <span className="text-slate-600">
+          {typeof pokemonID === "number"
+            ? `#${String(pokemonID).padStart(4, "0")}`
+            : ""}
+        </span>
       </div>
       <hr className="m-2 border-t-2 border-gray-300" />
       <div>
@@ -128,7 +113,7 @@ const PokemonDetailsPanel = ({ pokemonID }) => {
               <div
                 id="pokemon-hp"
                 className="h-2 bg-green-500 rounded-md"
-                style={{ width: `${pokemonDetails.stats[0]?.base_stat}%` }} // HP
+                style={{ width: `${pokemonDetails.stats[0]?.base_stat}%` }}
               ></div>
             </div>
             <p className="text-xs text-gray-600">Attack</p>
@@ -136,7 +121,7 @@ const PokemonDetailsPanel = ({ pokemonID }) => {
               <div
                 id="pokemon-attack"
                 className="h-2 bg-yellow-500 rounded-md"
-                style={{ width: `${pokemonDetails.stats[1]?.base_stat}%` }} // Attack
+                style={{ width: `${pokemonDetails.stats[1]?.base_stat}%` }}
               ></div>
             </div>
             <p className="text-xs text-gray-600">Defence</p>
@@ -144,7 +129,7 @@ const PokemonDetailsPanel = ({ pokemonID }) => {
               <div
                 id="pokemon-defence"
                 className="h-2 bg-blue-500 rounded-md"
-                style={{ width: `${pokemonDetails.stats[2]?.base_stat}%` }} // Defence
+                style={{ width: `${pokemonDetails.stats[2]?.base_stat}%` }}
               ></div>
             </div>
           </>
